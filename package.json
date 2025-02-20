@@ -12,5 +12,9 @@
   "devDependencies": {
     "electron": "^28.3.3"
   },
-  "keywords": []
+  "keywords": [],
+  "dependencies": {
+    "electron": "^28.3.3",
+    "systeminformation": "^5.18.7"
+  }
 }

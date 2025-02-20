@@ -1,24 +1,20 @@
-const { remote, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 const { exec } = require('child_process');
 const util = require('util');
 const execPromise = util.promisify(exec);
+const si = require('systeminformation');
 
 // Window Controls with animations
 document.getElementById('minimize').addEventListener('click', () => {
-    remote.getCurrentWindow().minimize();
+    ipcRenderer.send('window-minimize');
 });
 
 document.getElementById('maximize').addEventListener('click', () => {
-    const win = remote.getCurrentWindow();
-    if (win.isMaximized()) {
-        win.unmaximize();
-    } else {
-        win.maximize();
-    }
+    ipcRenderer.send('window-toggle-maximize');
 });
 
 document.getElementById('close').addEventListener('click', () => {
-    remote.getCurrentWindow().close();
+    ipcRenderer.send('window-close');
 });
 
 // Handle window state changes
@@ -85,7 +81,8 @@ async function executeCommand(command) {
 const toggleHibernate = document.getElementById('toggleHibernate');
 let hibernateEnabled = false;
 
-toggleHibernate.addEventListener('click', async () => {
+toggleHibernate.addEventListener('click', async (e) => {
+    if (e.target.disabled) return;
     toggleHibernate.classList.add('processing');
     
     const command = hibernateEnabled
@@ -109,7 +106,8 @@ toggleHibernate.addEventListener('click', async () => {
 });
 
 // Performance Mode with animation
-document.getElementById('enablePerformance').addEventListener('click', async () => {
+document.getElementById('enablePerformance').addEventListener('click', async (e) => {
+    if (e.target.disabled) return;
     const button = document.getElementById('enablePerformance');
     button.classList.add('processing');
     
@@ -139,7 +137,8 @@ document.getElementById('enablePerformance').addEventListener('click', async () 
 });
 
 // Disk Cleanup with progress animation
-document.getElementById('cleanDisk').addEventListener('click', async () => {
+document.getElementById('cleanDisk').addEventListener('click', async (e) => {
+    if (e.target.disabled) return;
     const button = document.getElementById('cleanDisk');
     button.classList.add('processing');
     
@@ -169,7 +168,8 @@ document.getElementById('cleanDisk').addEventListener('click', async () => {
 });
 
 // Power Plan with animation
-document.getElementById('powerPlan').addEventListener('click', async () => {
+document.getElementById('powerPlan').addEventListener('click', async (e) => {
+    if (e.target.disabled) return;
     const button = document.getElementById('powerPlan');
     button.classList.add('processing');
     
@@ -205,34 +205,54 @@ async function detectSystemType() {
         const systemTypeElement = document.getElementById('systemType');
         systemTypeElement.innerHTML = '<span class="loading">Detecting...</span>';
         
-        // Check if the system has a battery
-        const { stdout } = await execPromise('WMIC Path Win32_Battery Get BatteryStatus');
-        const isLaptop = stdout.trim().length > 0;
+        // Utilisation de systeminformation pour une détection cross-platform
+        const [battery, chassis] = await Promise.all([
+            si.battery(),
+            si.chassis()
+        ]);
         
-        setTimeout(() => {
-            systemTypeElement.textContent = isLaptop ? 'Laptop' : 'Desktop';
-            systemTypeElement.classList.add('detected');
-        }, 1000);
+        const isLaptop = battery.hasBattery || 
+                        chassis.type.toLowerCase().includes('laptop') ||
+                        chassis.type.toLowerCase().includes('notebook');
         
-        // Analyze system configuration
-        analyzeSystem();
+        systemTypeElement.textContent = isLaptop ? 
+            `Laptop ⚡ (${chassis.manufacturer} ${chassis.type})` : 
+            `Desktop 🖥️ (${chassis.manufacturer} ${chassis.type})`;
+        
+        updateCardRecommendations(isLaptop);
     } catch (error) {
-        console.error('Error detecting system type:', error);
-        document.getElementById('systemType').textContent = 'Unknown';
+        console.error('Detection error:', error);
+        document.getElementById('systemType').textContent = 'Desktop 🖥️ (Fallback)';
+        updateCardRecommendations(false);
     }
 }
 
-async function analyzeSystem() {
-    const optimizations = [];
+// Nouvelle vérification de batterie plus fiable
+async function checkBatteryExists() {
+    try {
+        const { stdout } = await execPromise('wmic path Win32_Battery get Status');
+        return stdout.includes('OK') || stdout.includes('Charging');
+    } catch {
+        return false;
+    }
+}
+
+async function analyzeSystem(isLaptop) {
+    let optimizations = [];
     const infoText = document.querySelector('.system-info-details p');
-    infoText.innerHTML = '<span class="loading">Analyzing system configuration...</span>';
     
     try {
-        // Check hibernate status
-        const { stdout: hibernateStatus } = await execPromise('powercfg /availablesleepstates');
-        if (!hibernateStatus.toLowerCase().includes('hibernate')) {
-            optimizations.push('hibernate');
-            document.getElementById('hibernateCheck').checked = true;
+        infoText.innerHTML = '<span class="loading">Analyzing system configuration...</span>';
+        
+        if(isLaptop) {
+            document.getElementById('hibernateCheck').checked = false;
+        } else {
+            // Vérifier hibernate seulement sur desktop
+            const { stdout } = await execPromise('powercfg /availablesleepstates');
+            if(stdout.includes('Hibernate')) {
+                optimizations.push('hibernate');
+                document.getElementById('hibernateCheck').checked = true;
+            }
         }
         
         // Check power plan
@@ -263,8 +283,8 @@ async function analyzeSystem() {
             infoText.classList.add('analyzed');
         }, 1500);
     } catch (error) {
-        console.error('Error analyzing system:', error);
-        infoText.textContent = 'Error analyzing system';
+        console.error('Analysis error:', error);
+        infoText.textContent = 'Ready for optimization';
     }
 }
 
@@ -326,10 +346,32 @@ document.getElementById('optimizeAll').addEventListener('click', async () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
             </svg>
-            Optimize All Selected
+            Optimize Recommended
         `;
     }, 3000);
 });
 
 // Initialize system detection
-detectSystemType(); 
+detectSystemType();
+
+// Ajouter cette fonction après detectSystemType
+function updateCardRecommendations(isLaptop) {
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const recommendation = card.dataset.recommended;
+        const isRecommended = recommendation === 'all' || 
+                            (isLaptop && recommendation === 'laptop') ||
+                            (!isLaptop && recommendation === 'desktop');
+
+        card.classList.toggle('not-recommended', !isRecommended);
+        
+        const button = card.querySelector('.action-button');
+        if (button) {
+            button.disabled = !isRecommended;
+            button.title = !isRecommended ? 
+                'This optimization is not recommended for your system' : 
+                '';
+        }
+    });
+} 

@@ -61,6 +61,7 @@ body {
     justify-content: center;
     border-radius: 6px;
     transition: all 0.2s ease;
+    -webkit-app-region: no-drag;
 }
 
 .titlebar-button:hover {
@@ -68,7 +69,12 @@ body {
 }
 
 .titlebar-button.close:hover {
-    background: #dc2626;
+    background: #dc2626 !important;
+}
+
+.titlebar-button svg {
+    -webkit-app-region: no-drag;
+    transition: transform 0.2s ease;
 }
 
 .container {
@@ -200,6 +206,8 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .action-button:hover {
@@ -223,6 +231,7 @@ body {
 .card:hover .card-overlay {
     opacity: 1;
     transform: translateY(0);
+    transition-delay: 0.3s;
 }
 
 .card-overlay-content {
@@ -285,6 +294,10 @@ body {
     font-weight: 500;
 }
 
+.card:hover .card-checkbox {
+    display: none;
+}
+
 .system-info {
     background: rgba(25, 25, 25, 0.8);
     backdrop-filter: blur(10px);
@@ -319,6 +332,11 @@ body {
 .system-info-details p {
     font-size: 14px;
     color: var(--text-secondary);
+}
+
+.system-info-details p.analyzed {
+    color: var(--primary);
+    font-weight: 500;
 }
 
 .optimize-all-button {
@@ -382,4 +400,44 @@ body {
 
 .optimize-all-button.optimizing {
     animation: pulse 2s infinite;
+}
+
+/* Ajouter des styles pour les emojis */
+#systemType {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.system-info-details h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card.not-recommended {
+    background: rgba(80, 0, 0, 0.3);
+    border-color: rgba(255, 50, 50, 0.3);
+    opacity: 0.7;
+}
+
+.card.not-recommended:hover {
+    transform: none;
+    cursor: not-allowed;
+}
+
+.card.not-recommended .action-button {
+    background: rgba(255, 50, 50, 0.2);
+    border-color: rgba(255, 50, 50, 0.3);
+    pointer-events: none;
+}
+
+.card.not-recommended::after {
+    content: "⚠️ Not recommended for your system";
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff4444;
+    font-weight: 600;
+    font-size: 12px;
 } 

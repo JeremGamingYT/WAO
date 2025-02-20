@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -25,6 +25,17 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools();
   }
+
+  // IPC handlers for window controls
+  ipcMain.on('window-minimize', () => win.minimize());
+  ipcMain.on('window-toggle-maximize', () => {
+    win.isMaximized() ? win.unmaximize() : win.maximize();
+  });
+  ipcMain.on('window-close', () => win.close());
+
+  // Mettre à jour les icônes lors du redimensionnement
+  win.on('maximize', () => win.webContents.send('window-maximized'));
+  win.on('unmaximize', () => win.webContents.send('window-unmaximized'));
 }
 
 app.whenReady().then(() => {
