@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Advanced Optimizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="titlebar">
+        <div class="titlebar-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: -4px;">
+                <path d="M12 3a9 9 0 0 0-9 9v9h18v-9a9 9 0 0 0-9-9z"></path>
+                <path d="M8 11a4 4 0 0 1 8 0"></path>
+            </svg>
+            Windows Advanced Optimizer
+        </div>
+        <div class="titlebar-controls">
+            <button class="titlebar-button" id="minimize">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            <button class="titlebar-button" id="maximize">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                </svg>
+            </button>
+            <button class="titlebar-button close" id="close">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-item active" data-page="optimization">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Optimization</span>
+            </div>
+            <div class="sidebar-item" data-page="settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>Settings</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="optimization-page" class="page active">
+                <div class="system-info">
+                    <div class="system-info-text">
+                        <div class="system-info-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                <rect x="9" y="9" width="6" height="6"></rect>
+                                <line x1="9" y1="1" x2="9" y2="4"></line>
+                                <line x1="15" y1="1" x2="15" y2="4"></line>
+                                <line x1="9" y1="20" x2="9" y2="23"></line>
+                                <line x1="15" y1="20" x2="15" y2="23"></line>
+                                <line x1="20" y1="9" x2="23" y2="9"></line>
+                                <line x1="20" y1="14" x2="23" y2="14"></line>
+                                <line x1="1" y1="9" x2="4" y2="9"></line>
+                                <line x1="1" y1="14" x2="4" y2="14"></line>
+                            </svg>
+                        </div>
+                        <div class="system-info-details">
+                            <h3>System Type: <span id="systemType">Detecting...</span></h3>
+                            <p>Analyzing system configuration...</p>
+                        </div>
+                    </div>
+                    <button class="optimize-all-button" id="optimizeAll">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                        </svg>
+                        Optimize All Selected
+                    </button>
+                </div>
+
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-icon">💤</div>
+                        <h3>Hibernate Mode</h3>
+                        <p>Enable or disable Windows hibernate mode to improve startup time and save disk space.</p>
+                        <button class="action-button" id="toggleHibernate">Enable Hibernate</button>
+                        <div class="card-overlay">
+                            <div class="card-overlay-content">
+                                <h4>Hibernate Mode Details</h4>
+                                <p>Hibernation saves your open documents and programs to your hard disk and then turns off your computer. This feature can help save power but uses disk space.</p>
+                                <ul>
+                                    <li>Saves open work</li>
+                                    <li>Reduces power consumption</li>
+                                    <li>Faster startup than cold boot</li>
+                                </ul>
+                            </div>
+                            <div class="card-checkbox">
+                                <input type="checkbox" id="hibernateCheck" name="hibernateCheck">
+                                <label for="hibernateCheck">Include in optimization</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🚀</div>
+                        <h3>Performance Mode</h3>
+                        <p>Optimize Windows settings for maximum performance.</p>
+                        <button class="action-button" id="enablePerformance">Enable</button>
+                        <div class="card-overlay">
+                            <div class="card-overlay-content">
+                                <h4>Performance Mode Details</h4>
+                                <p>Adjusts Windows visual effects and system settings to prioritize performance over aesthetics.</p>
+                                <ul>
+                                    <li>Disables animations</li>
+                                    <li>Optimizes visual effects</li>
+                                    <li>Improves system responsiveness</li>
+                                </ul>
+                            </div>
+                            <div class="card-checkbox">
+                                <input type="checkbox" id="performanceCheck" name="performanceCheck">
+                                <label for="performanceCheck">Include in optimization</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🧹</div>
+                        <h3>Disk Cleanup</h3>
+                        <p>Clean temporary files and free up disk space.</p>
+                        <button class="action-button" id="cleanDisk">Clean Now</button>
+                        <div class="card-overlay">
+                            <div class="card-overlay-content">
+                                <h4>Disk Cleanup Details</h4>
+                                <p>Removes temporary files, system logs, and unnecessary data to free up disk space.</p>
+                                <ul>
+                                    <li>Removes temporary files</li>
+                                    <li>Cleans system cache</li>
+                                    <li>Improves disk performance</li>
+                                </ul>
+                            </div>
+                            <div class="card-checkbox">
+                                <input type="checkbox" id="cleanupCheck" name="cleanupCheck">
+                                <label for="cleanupCheck">Include in optimization</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">⚡</div>
+                        <h3>Power Plan</h3>
+                        <p>Switch to high performance power plan.</p>
+                        <button class="action-button" id="powerPlan">Optimize</button>
+                        <div class="card-overlay">
+                            <div class="card-overlay-content">
+                                <h4>Power Plan Details</h4>
+                                <p>Configures system power settings for optimal performance or battery life.</p>
+                                <ul>
+                                    <li>Adjusts CPU power</li>
+                                    <li>Optimizes screen brightness</li>
+                                    <li>Manages sleep settings</li>
+                                </ul>
+                            </div>
+                            <div class="card-checkbox">
+                                <input type="checkbox" id="powerCheck" name="powerCheck">
+                                <label for="powerCheck">Include in optimization</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-page" class="page">
+                <div class="system-info">
+                    <div class="system-info-text">
+                        <div class="system-info-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <div class="system-info-details">
+                            <h3>Application Settings</h3>
+                            <p>Configure application preferences</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html> 

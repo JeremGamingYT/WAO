@@ -1,0 +1,16 @@
+{
+  "name": "wao",
+  "version": "1.0.0",
+  "description": "Windows Advanced Optimizer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.3.3"
+  },
+  "keywords": []
+}
