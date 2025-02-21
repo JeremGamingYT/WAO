@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const Store = require('electron-store');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -13,13 +14,25 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      additionalArguments: ['--enable-features=HardwareMediaKeyHandling'],
+      webSecurity: true
     }
   });
 
   // Set window properties
   win.setBackgroundColor('#00ffffff');
   win.loadFile('index.html');
+
+  // Activer les permissions système
+  win.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    const systemPermissions = ['systemInfo', 'hardware', 'battery'];
+    if (systemPermissions.includes(permission)) {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
 
   // Open DevTools in development
   if (process.env.NODE_ENV === 'development') {
@@ -36,6 +49,10 @@ function createWindow() {
   // Mettre à jour les icônes lors du redimensionnement
   win.on('maximize', () => win.webContents.send('window-maximized'));
   win.on('unmaximize', () => win.webContents.send('window-unmaximized'));
+
+  win.webContents.on('did-finish-load', () => {
+    win.webContents.send('load-settings');
+  });
 }
 
 app.whenReady().then(() => {
@@ -63,4 +80,6 @@ app.on('browser-window-created', (_, window) => {
   window.on('unmaximize', () => {
     window.webContents.send('window-unmaximized');
   });
-}); 
+});
+
+Store.initRenderer(); 
