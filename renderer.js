@@ -249,7 +249,7 @@ async function detectSystemType() {
       si.system().catch(() => ({ manufacturer: 'Unknown', model: 'Unknown' })),
       si.cpu().catch(() => ({ manufacturer: 'Unknown', brand: 'Unknown' })),
       si.mem().catch(() => ({ total: 0 })),
-      si.graphics().catch(() => ({ controllers: [{ model: 'Unknown' }] }))
+      si.graphics().catch(() => ({ controllers: [] }))
     ]);
 
     // Détection plus précise du type de système
@@ -260,7 +260,34 @@ async function detectSystemType() {
     // Formatage des informations
     const formattedCPU = `${cpu.manufacturer || ''} ${cpu.brand || 'Unknown CPU'}`.trim();
     const formattedRAM = `${Math.round((mem.total || 0) / (1024 * 1024 * 1024))}GB RAM`;
-    const formattedGPU = graphics.controllers[0]?.model || 'Unknown GPU';
+    
+    // Amélioration de la détection GPU
+    let formattedGPU = 'Unknown GPU';
+    if (graphics.controllers && graphics.controllers.length > 0) {
+      const gpus = graphics.controllers
+        .filter(gpu => gpu.model || gpu.vendor || gpu.name)
+        .map(gpu => {
+          const model = gpu.model || gpu.name || '';
+          const vendor = gpu.vendor || '';
+          // Filtrer les informations redondantes
+          return model.includes(vendor) ? model : `${vendor} ${model}`.trim();
+        })
+        .filter(gpu => gpu.length > 0);
+
+      if (gpus.length === 1) {
+        formattedGPU = gpus[0];
+      } else if (gpus.length > 1) {
+        // Trier pour mettre les GPU dédiés (NVIDIA, AMD) en premier
+        gpus.sort((a, b) => {
+          const dedicatedGPU = /(nvidia|rtx|gtx|radeon|amd)/i;
+          const aIsDedicated = dedicatedGPU.test(a);
+          const bIsDedicated = dedicatedGPU.test(b);
+          return bIsDedicated - aIsDedicated;
+        });
+        formattedGPU = gpus.join(' + ');
+      }
+    }
+
     const systemModel = `${system.manufacturer || ''} ${system.model || 'Unknown'}`.trim();
 
     // Mise à jour de l'interface
@@ -351,16 +378,38 @@ async function fallbackSystemDetection() {
     systemTypeElement.textContent = "Using fallback detection...";
 
     // Utiliser systeminformation comme solution de secours
-    const [cpu, mem, gpu] = await Promise.all([
+    const [cpu, mem, graphics] = await Promise.all([
       si.cpu().catch(() => ({ manufacturer: 'Unknown', brand: 'Unknown' })),
       si.mem().catch(() => ({ total: 0 })),
-      si.graphics().catch(() => ({ controllers: [{ model: 'Unknown' }] }))
+      si.graphics().catch(() => ({ controllers: [] }))
     ]);
 
     // Formater les informations
     const cpuInfo = `${cpu.manufacturer || ''} ${cpu.brand || 'Unknown CPU'}`.trim();
     const memoryGB = Math.round((mem.total || 0) / (1024 * 1024 * 1024));
-    const gpuInfo = gpu.controllers[0]?.model || 'Unknown GPU';
+    
+    // Amélioration de la détection GPU en fallback
+    let gpuInfo = 'Unknown GPU';
+    if (graphics.controllers && graphics.controllers.length > 0) {
+      const gpus = graphics.controllers
+        .filter(gpu => gpu.model || gpu.vendor || gpu.name)
+        .map(gpu => {
+          const model = gpu.model || gpu.name || '';
+          const vendor = gpu.vendor || '';
+          return model.includes(vendor) ? model : `${vendor} ${model}`.trim();
+        })
+        .filter(gpu => gpu.length > 0);
+
+      if (gpus.length > 0) {
+        gpus.sort((a, b) => {
+          const dedicatedGPU = /(nvidia|rtx|gtx|radeon|amd)/i;
+          const aIsDedicated = dedicatedGPU.test(a);
+          const bIsDedicated = dedicatedGPU.test(b);
+          return bIsDedicated - aIsDedicated;
+        });
+        gpuInfo = gpus.join(' + ');
+      }
+    }
 
     // Vérifier si c'est un laptop avec l'API Battery
     const isLaptop = await checkBatteryExists();
